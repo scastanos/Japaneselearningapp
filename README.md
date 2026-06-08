@@ -129,7 +129,4 @@ This app was designed specifically for **ADHD combined type**:
 - **6 AI scenarios** — short, varied, never repetitive
 - **Hyperfocus-friendly** — deep content available when the spark hits
 - **No guilt UX** — tasks can't be un-checked, but you can always come back
-# Japaneselearningapp
-# Japaneselearningapp
-# Japaneselearningapp
-# Japaneselearningapp
+
