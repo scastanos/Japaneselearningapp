@@ -131,3 +131,4 @@ This app was designed specifically for **ADHD combined type**:
 - **No guilt UX** — tasks can't be un-checked, but you can always come back
 # Japaneselearningapp
 # Japaneselearningapp
+# Japaneselearningapp
