@@ -132,3 +132,4 @@ This app was designed specifically for **ADHD combined type**:
 # Japaneselearningapp
 # Japaneselearningapp
 # Japaneselearningapp
+# Japaneselearningapp
