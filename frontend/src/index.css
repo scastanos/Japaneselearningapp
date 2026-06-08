@@ -1,0 +1,15 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body { @apply bg-stone-50 text-stone-900 antialiased; }
+}
+
+@layer components {
+  .card { @apply bg-white rounded-2xl border border-stone-100 shadow-sm; }
+  .btn-primary { @apply bg-sakura text-white px-4 py-2 rounded-xl font-medium text-sm hover:bg-sakura-dark transition-colors; }
+  .btn-secondary { @apply bg-stone-100 text-stone-700 px-4 py-2 rounded-xl font-medium text-sm hover:bg-stone-200 transition-colors; }
+  .badge { @apply text-xs font-medium px-2.5 py-1 rounded-full; }
+  .jp { @apply font-jp; }
+}
