@@ -1,6 +1,7 @@
 import asyncio
 import os
 
+import certifi
 from beanie import init_beanie
 from motor.motor_asyncio import AsyncIOMotorClient
 
@@ -24,8 +25,9 @@ async def connect_db() -> None:
 
     client = AsyncIOMotorClient(
         mongo_url,
-        serverSelectionTimeoutMS=10000,
-        connectTimeoutMS=10000,
+        tlsCAFile=certifi.where(),
+        serverSelectionTimeoutMS=15000,
+        connectTimeoutMS=15000,
     )
     db = client[os.getenv("MONGODB_DB", "nihongo_app")]
     await init_beanie(

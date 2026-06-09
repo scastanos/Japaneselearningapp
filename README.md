@@ -87,12 +87,14 @@ Open `http://localhost:5173`
    | `MONGODB_DB` | `nihongo_app` |
    | `SECRET_KEY` | long random string |
    | `ANTHROPIC_API_KEY` | `sk-ant-...` |
-   | `ALLOWED_ORIGINS` | `https://your-site.netlify.app,http://localhost:5173` |
+   | `ALLOWED_ORIGINS` | `https://nihongoj.netlify.app,http://localhost:5173` |
 
 4. Push to `main` — Vercel redeploys automatically
 5. Verify: `https://your-project.vercel.app/api/health` → `{"status":"ok","db":true}`
 
-**MongoDB Atlas:** Network Access must allow `0.0.0.0/0` (Vercel uses dynamic IPs).
+**MongoDB Atlas:** Network Access must allow `0.0.0.0/0` (Vercel uses dynamic IPs). If your DB password has special characters (`@`, `#`, `/`, etc.), [URL-encode it](https://www.mongodb.com/docs/atlas/troubleshoot-connection/) in `MONGODB_URL`.
+
+**Troubleshooting signup/login:** Visit `/api/health` on your Vercel URL. If `db` is not `true`, fix `MONGODB_URL` in Vercel and redeploy. If the browser blocks requests, add your Netlify URL to `ALLOWED_ORIGINS`.
 
 ### Frontend → Netlify (drag and drop)
 

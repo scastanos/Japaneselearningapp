@@ -12,3 +12,4 @@
 [build.environment]
   # Only used for Git-based Netlify deploys. Drag-and-drop uses public/config.js instead.
   VITE_API_URL = "https://japaneselearningapp-iota.vercel.app/api"
+  # Also set in Vercel: ALLOWED_ORIGINS=https://nihongoj.netlify.app,http://localhost:5173

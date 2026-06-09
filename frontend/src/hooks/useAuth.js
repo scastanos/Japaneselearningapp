@@ -15,7 +15,9 @@ export const useAuthStore = create((set, get) => ({
       return { ok: true }
     } catch (e) {
       set({ loading: false })
-      return { ok: false, error: e.response?.data?.detail || 'Login failed' }
+      const detail = e.response?.data?.detail
+      const message = typeof detail === 'string' ? detail : Array.isArray(detail) ? detail[0]?.msg : null
+      return { ok: false, error: message || 'Login failed — check API connection' }
     }
   },
 
@@ -28,7 +30,9 @@ export const useAuthStore = create((set, get) => ({
       return { ok: true }
     } catch (e) {
       set({ loading: false })
-      return { ok: false, error: e.response?.data?.detail || 'Registration failed' }
+      const detail = e.response?.data?.detail
+      const message = typeof detail === 'string' ? detail : Array.isArray(detail) ? detail[0]?.msg : null
+      return { ok: false, error: message || 'Registration failed — check API connection' }
     }
   },
 
