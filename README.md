@@ -1,72 +1,75 @@
-# 🌸 Nihongo Honeymoon App
+# NihonGo
 
-A full-stack Japanese learning app built for a student with ADHD (combined type) preparing for a honeymoon trip to Osaka, Kyoto, Tokyo, and Kumamoto.
+Japanese learning app for preparing for a trip to Japan — built with ADHD-friendly design (short tasks, XP, streaks, and low-friction daily practice).
+
+**Live:** Frontend on Netlify · Backend on Vercel · Database on MongoDB Atlas
 
 ## Stack
 
-| Layer    | Tech                        |
-|----------|-----------------------------|
-| Frontend | React 18 + Vite + Tailwind  |
+| Layer    | Tech                         |
+|----------|------------------------------|
+| Frontend | React 18 + Vite + Tailwind   |
 | Backend  | FastAPI (Python)             |
-| Database | MongoDB (via Motor + Beanie) |
-| Auth     | JWT (python-jose + bcrypt)  |
+| Database | MongoDB (Motor + Beanie)     |
+| Auth     | JWT (python-jose + bcrypt)   |
 | AI       | Anthropic Claude API         |
 | Deploy   | Netlify (FE) + Vercel (BE)   |
 
 ## Features
 
-- ✅ **Task tracker** — ADHD-friendly daily task menu, 15 tasks, XP + streaks
-- 🃏 **SRS Flashcards** — SM-2 spaced repetition with 20 seed cards, audio (Web Speech API), add your own
-- 🤖 **AI Sensei** — Claude-powered Usui-sensei with 6 scenario modes (business intro, hotel, restaurant, taxi, emergency, free chat)
-- 📊 **Dashboard** — Countdown to Japan, phase tracker, activity heatmap
-- 📺 **Content library** — 12 curated items (anime, podcasts, drama, cooking, YouTube) filterable by city + type
+- **Task tracker** — daily pick-any-3 menu, 15 tasks, XP + streaks
+- **SRS flashcards** — SM-2 spaced repetition, seed cards, Web Speech audio
+- **AI Sensei** — Claude-powered Usui-sensei with scenario modes (hotel, restaurant, taxi, emergency, free chat, and more)
+- **Dashboard** — countdown to Japan, phase tracker, activity heatmap
+- **Content library** — curated anime, podcasts, drama, and YouTube by city
 
 ---
 
-## Local Setup
-
-### 1. Clone & install
+## Local setup
 
 ```bash
-git clone <repo>
+git clone https://github.com/scastanos/Japaneselearningapp.git
+cd Japaneselearningapp
 
 # Backend
 cd backend
-python -m venv venv && source venv/bin/activate
+python3.12 -m venv venv && source venv/bin/activate
 pip install -r requirements.txt
-cp .env.example .env   # fill in your values
+cp .env.example .env   # add MongoDB Atlas URL + keys
 
 # Frontend
 cd ../frontend
 npm install
+cp .env.example .env   # optional — defaults proxy to localhost:8000
 ```
-
-### 2. Environment variables
 
 **backend/.env**
+
 ```
-MONGODB_URL=mongodb+srv://<user>:<password>@cluster.mongodb.net
+MONGODB_URL=mongodb+srv://<user>:<password>@cluster.mongodb.net/?retryWrites=true&w=majority
 MONGODB_DB=nihongo_app
 SECRET_KEY=your-long-random-secret
 ANTHROPIC_API_KEY=sk-ant-...
+ALLOWED_ORIGINS=http://localhost:5173
 ```
 
 **frontend/.env**
+
 ```
 VITE_API_URL=http://localhost:8000/api
 ```
 
-### 3. Run locally
+Run:
 
 ```bash
-# Terminal 1 — backend
-cd backend && uvicorn main:app --reload --port 8000
+# Terminal 1
+cd backend && source venv/bin/activate && uvicorn main:app --reload --port 8000
 
-# Terminal 2 — frontend
+# Terminal 2
 cd frontend && npm run dev
 ```
 
-Visit `http://localhost:5173`
+Open `http://localhost:5173`
 
 ---
 
@@ -74,81 +77,62 @@ Visit `http://localhost:5173`
 
 ### Backend → Vercel (git push)
 
-1. Import [the repo](https://github.com/scastanos/Japaneselearningapp) in [Vercel](https://vercel.com/new)
-2. Leave **Root Directory** as `.` (repo root — `vercel.json` routes to `backend/main.py`)
-3. In Vercel → **Settings → Environment Variables**, add these for **Production**:
+1. Import the repo in [Vercel](https://vercel.com/new)
+2. Leave **Root Directory** as `.` (`vercel.json` routes to `backend/main.py`)
+3. Add environment variables in Vercel → Settings → Environment Variables:
 
    | Variable | Value |
    |----------|-------|
-   | `MONGODB_URL` | `mongodb+srv://user:pass@cluster.mongodb.net/?retryWrites=true&w=majority` |
+   | `MONGODB_URL` | Atlas connection string |
    | `MONGODB_DB` | `nihongo_app` |
    | `SECRET_KEY` | long random string |
    | `ANTHROPIC_API_KEY` | `sk-ant-...` |
    | `ALLOWED_ORIGINS` | `https://your-site.netlify.app,http://localhost:5173` |
 
 4. Push to `main` — Vercel redeploys automatically
-5. Verify: `https://your-project.vercel.app/api/health` should return `{"status":"ok","db":true}`
+5. Verify: `https://your-project.vercel.app/api/health` → `{"status":"ok","db":true}`
 
 **MongoDB Atlas:** Network Access must allow `0.0.0.0/0` (Vercel uses dynamic IPs).
 
-API base URL: `https://your-project.vercel.app/api`
-
 ### Frontend → Netlify (drag and drop)
 
-Netlify drag-and-drop cannot inject build-time env vars, so the API URL is set in `frontend/public/config.js`.
+Drag-and-drop cannot inject build-time env vars, so the API URL lives in `frontend/public/config.js`.
 
 ```bash
-# Edit frontend/public/config.js first — set your Vercel URL
+# Set your Vercel URL in frontend/public/config.js first
 npm install --prefix frontend
 npm run prepare:netlify
 ```
 
-Then drag the **`netlify-drop/`** folder onto [app.netlify.com/drop](https://app.netlify.com/drop).
+Drag **`netlify-drop/`** onto [app.netlify.com/drop](https://app.netlify.com/drop).
 
-After you get your Netlify URL, add it to Vercel's `ALLOWED_ORIGINS` and redeploy the backend.
+After deploy, add your Netlify URL to Vercel's `ALLOWED_ORIGINS` and redeploy the backend.
 
-**Optional:** connect the repo to Netlify via Git instead — settings are in `netlify.toml`.
-
-### MongoDB → MongoDB Atlas (free tier)
-
-1. Create a free cluster at mongodb.com/atlas
-2. Add a database user
-3. Whitelist all IPs (`0.0.0.0/0`) for Vercel serverless
-4. Copy the connection string to `MONGODB_URL`
+**Optional:** connect the repo to Netlify via Git — settings in `netlify.toml`.
 
 ---
 
-## Architecture
+## Project structure
 
 ```
 frontend/
-  src/
-    pages/          # DashboardPage, TasksPage, FlashcardsPage, ChatPage, ContentPage
-    components/ui/  # Layout, sidebar
-    hooks/          # useAuth (Zustand store)
-    lib/            # api.js (Axios client)
+  src/pages/       Dashboard, Tasks, Flashcards, Chat, Content
+  src/hooks/       useAuth (Zustand)
+  src/lib/         api.js
 
 backend/
-  main.py           # FastAPI app + CORS
-  database.py       # MongoDB connection (Motor + Beanie)
-  models/           # User, TaskLog, Flashcard, ProgressEntry, ContentItem
-  routes/           # auth, tasks, flashcards, progress, chat, content
-  services/
-    auth_service.py # JWT, bcrypt
-    srs_service.py  # SM-2 algorithm
+  main.py          FastAPI app
+  database.py      MongoDB (Motor + Beanie)
+  routes/          auth, tasks, flashcards, progress, chat, content
+  services/        auth, SRS (SM-2)
 ```
 
 ---
 
-## ADHD Design Principles
+## ADHD design principles
 
-This app was designed specifically for **ADHD combined type**:
-
-- **Max 15-min tasks** — no long sessions
-- **Pick-any-3 daily menu** — removes decision paralysis
-- **Movement tasks included** — walk & talk, bowing drill, kitchen vocab
-- **XP + streaks** — dopamine-friendly progress feedback
-- **6 AI scenarios** — short, varied, never repetitive
-- **Hyperfocus-friendly** — deep content available when the spark hits
-- **No guilt UX** — tasks can't be un-checked, but you can always come back
-
+- Max 15-minute tasks — no long sessions
+- Pick-any-3 daily menu — reduces decision paralysis
+- XP + streaks — progress feedback
+- Short AI scenarios — varied, never repetitive
+- No guilt UX — you can always come back

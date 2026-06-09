@@ -19,7 +19,7 @@ def allowed_origins() -> list[str]:
     return [origin.strip() for origin in raw.split(",") if origin.strip()]
 
 
-app = FastAPI(title="Nihongo App API", version="1.0.0")
+app = FastAPI(title="NihonGo API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -53,16 +53,16 @@ app.include_router(content.router, prefix="/api/content", tags=["content"])
 
 @app.get("/")
 async def root():
-    return {"status": "ok", "app": "Nihongo Honeymoon App"}
+    return {"status": "ok", "app": "NihonGo"}
 
 
 @app.get("/api/health")
 async def health():
     try:
         db_ok = await ping_db()
-        return {"status": "ok", "app": "Nihongo Honeymoon App", "db": db_ok}
+        return {"status": "ok", "app": "NihonGo", "db": db_ok}
     except Exception as exc:
         return JSONResponse(
             status_code=503,
-            content={"status": "error", "app": "Nihongo Honeymoon App", "db": str(exc)},
+            content={"status": "error", "app": "NihonGo", "db": str(exc)},
         )

@@ -21,7 +21,7 @@ export default function Layout() {
           <h1 className="text-lg font-semibold text-stone-900">
             <span className="jp text-sakura">日本語</span>
           </h1>
-          <p className="text-xs text-stone-400 mt-0.5">Honeymoon Study App</p>
+          <p className="text-xs text-stone-400 mt-0.5">NihonGo</p>
         </div>
 
         <nav className="flex flex-col gap-1 flex-1">

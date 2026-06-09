@@ -84,7 +84,7 @@ export default function DashboardPage() {
 
       {/* Destinations */}
       <div className="card p-4">
-        <p className="text-xs font-medium text-stone-400 uppercase tracking-wider mb-3">Honeymoon destinations</p>
+        <p className="text-xs font-medium text-stone-400 uppercase tracking-wider mb-3">Japan destinations</p>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
           {[
             { city: '大阪', en: 'Osaka',    emoji: '🏮', tip: 'たこ焼き (takoyaki) awaits' },

@@ -24,7 +24,7 @@ export default function LoginPage() {
       <div className="card p-8 w-full max-w-sm">
         <div className="text-center mb-6">
           <h1 className="jp text-3xl font-bold text-sakura mb-1">日本語</h1>
-          <p className="text-stone-500 text-sm">Honeymoon Japanese · 2026</p>
+          <p className="text-stone-500 text-sm">NihonGo · Japanese Learning</p>
         </div>
 
         <form onSubmit={handle} className="flex flex-col gap-3">
