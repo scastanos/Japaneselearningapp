@@ -1,26 +1,64 @@
-from motor.motor_asyncio import AsyncIOMotorClient
-from beanie import init_beanie
-from models.user import User
-from models.task import TaskLog
-from models.flashcard import Flashcard, FlashcardReview
-from models.progress import ProgressEntry
-from models.content import ContentItem
+import asyncio
 import os
 
-client: AsyncIOMotorClient = None
+from beanie import init_beanie
+from motor.motor_asyncio import AsyncIOMotorClient
 
-async def connect_db():
+from models.content import ContentItem
+from models.flashcard import Flashcard, FlashcardReview
+from models.progress import ProgressEntry
+from models.task import TaskLog
+from models.user import User
+
+client: AsyncIOMotorClient | None = None
+_initialized = False
+_init_lock = asyncio.Lock()
+
+
+async def connect_db() -> None:
     global client
-    mongo_url = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
-    client = AsyncIOMotorClient(mongo_url)
+
+    mongo_url = os.getenv("MONGODB_URL")
+    if not mongo_url:
+        raise RuntimeError("MONGODB_URL is not set")
+
+    client = AsyncIOMotorClient(
+        mongo_url,
+        serverSelectionTimeoutMS=10000,
+        connectTimeoutMS=10000,
+    )
     db = client[os.getenv("MONGODB_DB", "nihongo_app")]
     await init_beanie(
         database=db,
-        document_models=[User, TaskLog, Flashcard, FlashcardReview, ProgressEntry, ContentItem]
+        document_models=[User, TaskLog, Flashcard, FlashcardReview, ProgressEntry, ContentItem],
     )
-    print("✅ Connected to MongoDB")
 
-async def close_db():
-    global client
+
+async def ensure_db() -> None:
+    """Lazy init for Vercel serverless — lifespan is unreliable on cold starts."""
+    global _initialized
+
+    if _initialized:
+        return
+
+    async with _init_lock:
+        if _initialized:
+            return
+        await connect_db()
+        _initialized = True
+
+
+async def ping_db() -> bool:
+    await ensure_db()
+    if not client:
+        return False
+    await client.admin.command("ping")
+    return True
+
+
+async def close_db() -> None:
+    global client, _initialized
     if client:
         client.close()
+        client = None
+    _initialized = False

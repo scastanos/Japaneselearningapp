@@ -1,11 +1,11 @@
 import os
-from contextlib import asynccontextmanager
 
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
 
-from database import close_db, connect_db
+from database import ensure_db, ping_db
 from routes import auth, chat, content, flashcards, progress, tasks
 
 load_dotenv()
@@ -14,19 +14,12 @@ load_dotenv()
 def allowed_origins() -> list[str]:
     raw = os.getenv(
         "ALLOWED_ORIGINS",
-        "http://localhost:5173,http://localhost:4173",
+        "http://localhost:5173,http://localhost:5174,http://localhost:4173",
     )
     return [origin.strip() for origin in raw.split(",") if origin.strip()]
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    await connect_db()
-    yield
-    await close_db()
-
-
-app = FastAPI(title="Nihongo App API", version="1.0.0", lifespan=lifespan)
+app = FastAPI(title="Nihongo App API", version="1.0.0")
 
 app.add_middleware(
     CORSMiddleware,
@@ -35,6 +28,20 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+@app.middleware("http")
+async def connect_database(request: Request, call_next):
+    if request.url.path not in ("/", "/api/health"):
+        try:
+            await ensure_db()
+        except Exception as exc:
+            return JSONResponse(
+                status_code=503,
+                content={"detail": f"Database unavailable: {exc}"},
+            )
+    return await call_next(request)
+
 
 app.include_router(auth.router, prefix="/api/auth", tags=["auth"])
 app.include_router(tasks.router, prefix="/api/tasks", tags=["tasks"])
@@ -51,4 +58,11 @@ async def root():
 
 @app.get("/api/health")
 async def health():
-    return {"status": "ok", "app": "Nihongo Honeymoon App"}
+    try:
+        db_ok = await ping_db()
+        return {"status": "ok", "app": "Nihongo Honeymoon App", "db": db_ok}
+    except Exception as exc:
+        return JSONResponse(
+            status_code=503,
+            content={"status": "error", "app": "Nihongo Honeymoon App", "db": str(exc)},
+        )

@@ -75,18 +75,21 @@ Visit `http://localhost:5173`
 ### Backend → Vercel (git push)
 
 1. Import [the repo](https://github.com/scastanos/Japaneselearningapp) in [Vercel](https://vercel.com/new)
-2. Set **Root Directory** to `backend`
-3. Add environment variables in Vercel → Settings → Environment Variables:
+2. Leave **Root Directory** as `.` (repo root — `vercel.json` routes to `backend/main.py`)
+3. In Vercel → **Settings → Environment Variables**, add these for **Production**:
 
-   ```
-   MONGODB_URL=mongodb+srv://...
-   MONGODB_DB=nihongo_app
-   SECRET_KEY=your-long-random-secret
-   ANTHROPIC_API_KEY=sk-ant-...
-   ALLOWED_ORIGINS=https://your-site.netlify.app,http://localhost:5173
-   ```
+   | Variable | Value |
+   |----------|-------|
+   | `MONGODB_URL` | `mongodb+srv://user:pass@cluster.mongodb.net/?retryWrites=true&w=majority` |
+   | `MONGODB_DB` | `nihongo_app` |
+   | `SECRET_KEY` | long random string |
+   | `ANTHROPIC_API_KEY` | `sk-ant-...` |
+   | `ALLOWED_ORIGINS` | `https://your-site.netlify.app,http://localhost:5173` |
 
 4. Push to `main` — Vercel redeploys automatically
+5. Verify: `https://your-project.vercel.app/api/health` should return `{"status":"ok","db":true}`
+
+**MongoDB Atlas:** Network Access must allow `0.0.0.0/0` (Vercel uses dynamic IPs).
 
 API base URL: `https://your-project.vercel.app/api`
 
