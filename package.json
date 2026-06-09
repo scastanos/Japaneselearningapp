@@ -1,0 +1,9 @@
+{
+  "name": "japaneselearningapp",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build:frontend": "npm run build --prefix frontend",
+    "prepare:netlify": "npm run build:frontend && node scripts/prepare-netlify.js"
+  }
+}

@@ -1,3 +1,4 @@
+# Optional: use this if you connect the repo to Netlify via Git instead of drag-and-drop.
 [build]
   base    = "frontend"
   command = "npm run build"
@@ -9,4 +10,5 @@
   status = 200
 
 [build.environment]
-  VITE_API_URL = "https://YOUR-BACKEND-URL.railway.app/api"
+  # Only used for Git-based Netlify deploys. Drag-and-drop uses public/config.js instead.
+  VITE_API_URL = "https://japaneselearningapp-iota.vercel.app/api"

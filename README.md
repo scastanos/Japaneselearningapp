@@ -11,7 +11,7 @@ A full-stack Japanese learning app built for a student with ADHD (combined type)
 | Database | MongoDB (via Motor + Beanie) |
 | Auth     | JWT (python-jose + bcrypt)  |
 | AI       | Anthropic Claude API         |
-| Deploy   | Netlify (FE) + Railway (BE)  |
+| Deploy   | Netlify (FE) + Vercel (BE)   |
 
 ## Features
 
@@ -72,26 +72,45 @@ Visit `http://localhost:5173`
 
 ## Deployment
 
-### Backend → Railway
+### Backend → Vercel (git push)
 
-1. Create a Railway project
-2. Connect your GitHub repo
-3. Set root directory to `/` (uses the Dockerfile)
-4. Add environment variables in Railway dashboard
-5. Deploy — note the public URL
+1. Import [the repo](https://github.com/scastanos/Japaneselearningapp) in [Vercel](https://vercel.com/new)
+2. Set **Root Directory** to `backend`
+3. Add environment variables in Vercel → Settings → Environment Variables:
 
-### Frontend → Netlify
+   ```
+   MONGODB_URL=mongodb+srv://...
+   MONGODB_DB=nihongo_app
+   SECRET_KEY=your-long-random-secret
+   ANTHROPIC_API_KEY=sk-ant-...
+   ALLOWED_ORIGINS=https://your-site.netlify.app,http://localhost:5173
+   ```
 
-1. Connect your GitHub repo to Netlify
-2. Build settings are in `netlify.toml`
-3. Set environment variable: `VITE_API_URL=https://your-railway-url.railway.app/api`
-4. Deploy
+4. Push to `main` — Vercel redeploys automatically
+
+API base URL: `https://your-project.vercel.app/api`
+
+### Frontend → Netlify (drag and drop)
+
+Netlify drag-and-drop cannot inject build-time env vars, so the API URL is set in `frontend/public/config.js`.
+
+```bash
+# Edit frontend/public/config.js first — set your Vercel URL
+npm install --prefix frontend
+npm run prepare:netlify
+```
+
+Then drag the **`netlify-drop/`** folder onto [app.netlify.com/drop](https://app.netlify.com/drop).
+
+After you get your Netlify URL, add it to Vercel's `ALLOWED_ORIGINS` and redeploy the backend.
+
+**Optional:** connect the repo to Netlify via Git instead — settings are in `netlify.toml`.
 
 ### MongoDB → MongoDB Atlas (free tier)
 
 1. Create a free cluster at mongodb.com/atlas
 2. Add a database user
-3. Whitelist all IPs (`0.0.0.0/0`) for Railway
+3. Whitelist all IPs (`0.0.0.0/0`) for Vercel serverless
 4. Copy the connection string to `MONGODB_URL`
 
 ---
